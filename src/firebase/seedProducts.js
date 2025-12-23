@@ -1,7 +1,9 @@
-// Productos mockeados (falsos) para la aplicación
-const productosMockeados = [
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "./config";
+
+// Productos a subir a Firestore
+const products = [
   {
-    id: 1,
     name: "Laptop HP Pavilion",
     price: 899.99,
     category: "electronics",
@@ -10,7 +12,6 @@ const productosMockeados = [
     stock: 15
   },
   {
-    id: 2,
     name: "Mouse Logitech MX Master",
     price: 79.99,
     category: "electronics",
@@ -19,7 +20,6 @@ const productosMockeados = [
     stock: 30
   },
   {
-    id: 3,
     name: "Teclado Mecánico RGB",
     price: 129.99,
     category: "electronics",
@@ -28,7 +28,6 @@ const productosMockeados = [
     stock: 20
   },
   {
-    id: 4,
     name: "Monitor Samsung 27\"",
     price: 299.99,
     category: "electronics",
@@ -37,7 +36,6 @@ const productosMockeados = [
     stock: 12
   },
   {
-    id: 5,
     name: "Auriculares Sony WH-1000XM4",
     price: 349.99,
     category: "electronics",
@@ -46,7 +44,6 @@ const productosMockeados = [
     stock: 25
   },
   {
-    id: 6,
     name: "Cámara Canon EOS Rebel",
     price: 649.99,
     category: "electronics",
@@ -55,7 +52,6 @@ const productosMockeados = [
     stock: 8
   },
   {
-    id: 7,
     name: "Zapatillas Nike Air Max",
     price: 149.99,
     category: "clothing",
@@ -64,7 +60,6 @@ const productosMockeados = [
     stock: 40
   },
   {
-    id: 8,
     name: "Remera Adidas Deportiva",
     price: 39.99,
     category: "clothing",
@@ -73,7 +68,6 @@ const productosMockeados = [
     stock: 50
   },
   {
-    id: 9,
     name: "Jeans Levi's 501",
     price: 89.99,
     category: "clothing",
@@ -82,7 +76,6 @@ const productosMockeados = [
     stock: 35
   },
   {
-    id: 10,
     name: "Campera North Face",
     price: 249.99,
     category: "clothing",
@@ -91,7 +84,6 @@ const productosMockeados = [
     stock: 18
   },
   {
-    id: 11,
     name: "Tablet Samsung Galaxy Tab",
     price: 449.99,
     category: "electronics",
@@ -100,7 +92,6 @@ const productosMockeados = [
     stock: 22
   },
   {
-    id: 12,
     name: "Smartwatch Apple Watch Series 8",
     price: 399.99,
     category: "electronics",
@@ -110,46 +101,26 @@ const productosMockeados = [
   }
 ];
 
-// Simular delay de red (500ms - 2000ms)
-const simularDelay = () => {
-  return new Promise((resolve) => {
-    const delay = Math.random() * 1500 + 500; // Entre 500ms y 2000ms
-    setTimeout(resolve, delay);
-  });
-};
+// Función para subir productos a Firestore
+export const seedProducts = async () => {
+  try {
+    console.log("Iniciando carga de productos a Firestore...");
+    const productsCollection = collection(db, "products");
 
-// Obtener todos los productos o filtrar por categoría
-export const getProducts = (categoryId) => {
-  return simularDelay().then(() => {
-    if (categoryId) {
-      const productosFiltrados = productosMockeados.filter(
-        (producto) => producto.category === categoryId
-      );
-      return productosFiltrados;
-    }
-    return productosMockeados;
-  });
-};
-
-// Obtener un producto por su ID
-export const getProductById = (productId) => {
-  return simularDelay().then(() => {
-    const producto = productosMockeados.find(
-      (producto) => producto.id === parseInt(productId)
-    );
-
-    if (!producto) {
-      throw new Error("Producto no encontrado");
+    for (const product of products) {
+      const docRef = await addDoc(productsCollection, product);
+      console.log(`Producto agregado con ID: ${docRef.id}`);
     }
 
-    return producto;
-  });
+    console.log("¡Todos los productos fueron agregados exitosamente!");
+  } catch (error) {
+    console.error("Error al cargar productos:", error);
+  }
 };
 
-// Obtener todas las categorías únicas
-export const getCategories = () => {
-  return simularDelay().then(() => {
-    const categoriasUnicas = [...new Set(productosMockeados.map((p) => p.category))];
-    return categoriasUnicas;
-  });
-};
+// INSTRUCCIONES:
+// 1. Configura tus credenciales de Firebase en src/firebase/config.js
+// 2. Importa esta función en tu componente principal (App.jsx) temporalmente
+// 3. Llámala una vez para subir los productos: seedProducts()
+// 4. Verifica en la consola de Firebase que los productos se hayan creado
+// 5. Elimina la llamada a seedProducts() de tu código
