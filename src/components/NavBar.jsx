@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import CartWidget from "./CartWidget";
-import { getCategories } from "../data/products";
+import { getCategories } from "../firebase/services";
 
 function NavBar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

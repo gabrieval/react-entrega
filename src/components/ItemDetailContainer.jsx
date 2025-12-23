@@ -1,17 +1,21 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ItemDetail from "./ItemDetail";
-import { getProductById } from "../data/products";
+import { getProductById } from "../firebase/services";
+import { useCart } from "../context/CartContext";
 
 const ItemDetailContainer = () => {
   const { itemId } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [quantityAdded, setQuantityAdded] = useState(0);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     setLoading(true);
     setError(null);
+    setQuantityAdded(0);
     getProductById(itemId)
       .then((data) => {
         setProduct(data);
@@ -24,7 +28,8 @@ const ItemDetailContainer = () => {
   }, [itemId]);
 
   const handleAddToCart = (quantity) => {
-    alert(`Se agregaron ${quantity} unidad(es) de "${product.name}" al carrito`);
+    addToCart(product, quantity);
+    setQuantityAdded(quantity);
   };
 
   if (loading) {
@@ -37,7 +42,11 @@ const ItemDetailContainer = () => {
 
   return (
     <div className="item-detail-container">
-      <ItemDetail product={product} onAddToCart={handleAddToCart} />
+      <ItemDetail
+        product={product}
+        onAddToCart={handleAddToCart}
+        quantityAdded={quantityAdded}
+      />
     </div>
   );
 };
